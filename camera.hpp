@@ -24,6 +24,9 @@ private:
     QMediaCaptureSession m_mediaCaptureSession;
     QCamera m_camera;
     QGraphicsVideoItem m_graphicsVideoItem;
+
+    void repositionScene();
+    void resizeEvent(QResizeEvent *event) override;
 };
 
 #endif // CAMERA_HPP
