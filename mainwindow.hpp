@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_HPP
 #define MAINWINDOW_HPP
 
-#include "./ui_mainwindow.h"
+#include "ui_mainwindow.h"
 
 #include <QMainWindow>
 
