@@ -25,6 +25,11 @@ private:
     QCamera m_camera;
     QGraphicsVideoItem m_graphicsVideoItem;
 
+    QGraphicsLineItem m_hLine;
+    QGraphicsLineItem m_vLine;
+    QGraphicsPixmapItem m_crosshair;
+    qreal m_crosshairScale;
+
     void repositionScene();
     void resizeEvent(QResizeEvent *event) override;
 };
