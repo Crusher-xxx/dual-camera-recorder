@@ -17,7 +17,7 @@ Camera::Camera(QWidget *parent)
     ui.graphicsView->setScene(&m_graphicsScene);
     m_graphicsScene.addItem(&m_graphicsVideoItem);
 
-    // Setting offset so positioning works relative to the center
+    // Setting offset so positioning works relatively to the center
     m_crosshair.setOffset(-m_crosshair.boundingRect().width() / 2, -m_crosshair.boundingRect().height() / 2);
 
     // Styling
@@ -39,7 +39,6 @@ void Camera::setCameraDevice(const QCameraDevice &cameraDevice)
 
 void Camera::repositionScene()
 {
-
     // Set the scene to be the same size as the video
     m_graphicsScene.setSceneRect(m_graphicsVideoItem.boundingRect());
 
@@ -47,7 +46,7 @@ void Camera::repositionScene()
     auto ratio {m_graphicsVideoItem.boundingRect().width() / m_crosshair.boundingRect().width()};
     m_crosshair.setScale(m_crosshairScale * ratio);
 
-    // Position lines relative to their centers
+    // Position lines relatively to their centers
     qreal videoHalfWidth = m_graphicsVideoItem.boundingRect().width() / 2;
     qreal videoHalfHeight = m_graphicsVideoItem.boundingRect().height() / 2;
     m_hLine.setLine(-videoHalfWidth, 0, videoHalfWidth, 0);
