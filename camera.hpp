@@ -12,10 +12,17 @@
 class Camera : public QWidget
 {
     Q_OBJECT
+    Q_PROPERTY(bool crosshairVisible READ crosshairVisible WRITE setCrosshairVisible NOTIFY crosshairVisibleChanged)
+
+signals:
+    void crosshairVisibleChanged(bool visible);
 
 public:
     explicit Camera(QWidget *parent = nullptr);
     void setCameraDevice(const QCameraDevice &cameraDevice);
+
+    bool crosshairVisible();
+    void setCrosshairVisible(bool visible);
 
 private:
     Ui::Camera ui;
@@ -29,6 +36,7 @@ private:
     QGraphicsLineItem m_vLine;
     QGraphicsPixmapItem m_crosshair;
     qreal m_crosshairScale;
+    bool m_crosshairVisible;
 
     void repositionScene();
     void resizeEvent(QResizeEvent *event) override;

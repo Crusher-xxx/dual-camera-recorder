@@ -9,7 +9,9 @@ Camera::Camera(QWidget *parent)
 {
     ui.setupUi(this);
 
-    m_crosshair.hide();
+    // Hide the crosshair until the video appears
+    setCrosshairVisible(false);
+    m_crosshairVisible = true;
 
     m_mediaCaptureSession.setVideoOutput(&m_graphicsVideoItem);
     m_mediaCaptureSession.setCamera(&m_camera);
@@ -37,6 +39,20 @@ void Camera::setCameraDevice(const QCameraDevice &cameraDevice)
     ui.label->setText(m_camera.cameraDevice().description());
 }
 
+bool Camera::crosshairVisible()
+{
+    return m_crosshairVisible;
+}
+
+void Camera::setCrosshairVisible(bool visible)
+{
+    m_crosshairVisible = visible;
+    m_hLine.setVisible(visible);
+    m_vLine.setVisible(visible);
+    m_crosshair.setVisible(visible);
+    emit crosshairVisibleChanged(visible);
+}
+
 void Camera::repositionScene()
 {
     // Set the scene to be the same size as the video
@@ -57,7 +73,7 @@ void Camera::repositionScene()
     m_vLine.setPos(m_graphicsVideoItem.boundingRect().center());
     m_crosshair.setPos(m_graphicsVideoItem.boundingRect().center());
 
-    m_crosshair.show();
+    setCrosshairVisible(m_crosshairVisible);
     ui.graphicsView->fitInView(&m_graphicsVideoItem, Qt::KeepAspectRatio);
 }
 
