@@ -18,7 +18,8 @@ private:
 
     QDir m_recDir;
 
-    void showRecDirMessage();
     void openRecDir();
+    void showRecDirMessage();
+    void showRecDurationMessage(qint64 duration);
 };
 #endif // MAINWINDOW_HPP

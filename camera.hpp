@@ -20,11 +20,16 @@ class Camera : public QWidget
 signals:
     void crosshairVisibleChanged(bool visible);
     void imageSaved();
+    void recDurationChaged(qint64 duration);
+    void recStateChanged(QMediaRecorder::RecorderState state);
 
 public:
     explicit Camera(QWidget *parent = nullptr);
+    ~Camera();
     void setCameraDevice(const QCameraDevice &cameraDevice);
     void saveImage();
+    void startRecording();
+    void stopRecording();
 
     bool crosshairVisible();
     void setCrosshairVisible(bool visible);
@@ -51,6 +56,7 @@ private:
 
     // Camera output
     QImageCapture m_imageCapture;
+    QMediaRecorder m_mediaRecorder;
 
     void repositionScene();
     void resizeEvent(QResizeEvent *event) override;

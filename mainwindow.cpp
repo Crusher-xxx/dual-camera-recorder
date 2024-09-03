@@ -25,15 +25,45 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionTakeSnapshot, &QAction::triggered, ui.cam1, &Camera::saveImage);
     connect(ui.actionTakeSnapshot, &QAction::triggered, ui.cam2, &Camera::saveImage);
     connect(ui.actionOpenRecordings, &QAction::triggered, this, &MainWindow::openRecDir);
-    connect(ui.cam2, &Camera::imageSaved, this, &MainWindow::showRecDirMessage);
-}
 
-void MainWindow::showRecDirMessage()
-{
-    ui.statusbar->showMessage("Image saved: " + m_recDir.path());
+    connect(ui.cam2, &Camera::imageSaved, this, &MainWindow::showRecDirMessage);
+    connect(ui.cam2, &Camera::recDurationChaged, this, &MainWindow::showRecDurationMessage);
+
+    connect(ui.cam2, &Camera::recStateChanged, this, [this](QMediaRecorder::RecorderState state){ui.pushButtonStartRecording->setDisabled(state == QMediaRecorder::RecorderState::RecordingState);});
+    connect(ui.cam2, &Camera::recStateChanged, this, [this](QMediaRecorder::RecorderState state){ui.pushButtonStopRecording->setEnabled(state != QMediaRecorder::RecorderState::StoppedState);});
+    connect(ui.pushButtonStartRecording, &QPushButton::clicked, ui.cam1, &Camera::startRecording);
+    connect(ui.pushButtonStartRecording, &QPushButton::clicked, ui.cam2, &Camera::startRecording);
+    connect(ui.pushButtonStopRecording, &QPushButton::clicked, ui.cam1, &Camera::stopRecording);
+    connect(ui.pushButtonStopRecording, &QPushButton::clicked, ui.cam2, &Camera::stopRecording);
+
 }
 
 void MainWindow::openRecDir()
 {
     QDesktopServices::openUrl(m_recDir.absolutePath());
+}
+
+void MainWindow::showRecDirMessage()
+{
+    ui.statusbar->showMessage("Images saved to directory: " + m_recDir.path());
+}
+
+void MainWindow::showRecDurationMessage(qint64 duration)
+{
+    auto milliseconds{duration};
+    auto seconds{milliseconds / 1000};
+    auto minutes{seconds / 60};
+    auto hours{minutes / 60};
+
+    milliseconds %= 1000;
+    seconds %= 60;
+    minutes %= 60;
+
+    QString str{QString("Duration: %1:%2:%3.%4")
+                    .arg(hours, 2, 10, QChar{'0'})
+                    .arg(minutes, 2, 10, QChar{'0'})
+                    .arg(seconds, 2, 10, QChar{'0'})
+                    .arg(milliseconds, 2, 10, QChar{'0'})};
+
+    ui.statusbar->showMessage(str);
 }

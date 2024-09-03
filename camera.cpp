@@ -14,10 +14,12 @@ Camera::Camera(QWidget *parent)
     m_crosshairVisible = true;
 
     m_imageCapture.setQuality(QImageCapture::VeryHighQuality);
+    m_mediaRecorder.setQuality(QMediaRecorder::VeryHighQuality);
 
     m_mediaCaptureSession.setCamera(&m_camera);
     m_mediaCaptureSession.setVideoOutput(&m_graphicsVideoItem);
     m_mediaCaptureSession.setImageCapture(&m_imageCapture);
+    m_mediaCaptureSession.setRecorder(&m_mediaRecorder);
 
     ui.graphicsView->setScene(&m_graphicsScene);
     m_graphicsScene.addItem(&m_graphicsVideoItem);
@@ -34,6 +36,16 @@ Camera::Camera(QWidget *parent)
 
     connect(&m_graphicsVideoItem, &QGraphicsVideoItem::nativeSizeChanged, this, &Camera::repositionScene);
     connect(&m_imageCapture, &QImageCapture::imageSaved, this, &Camera::imageSaved);
+    connect(&m_mediaRecorder, &QMediaRecorder::durationChanged, this, &Camera::recDurationChaged);
+    connect(&m_mediaRecorder, &QMediaRecorder::recorderStateChanged, this, &Camera::recStateChanged);
+}
+
+Camera::~Camera()
+{
+    if (m_mediaRecorder.recorderState() != QMediaRecorder::StoppedState)
+    {
+        m_mediaRecorder.stop();
+    }
 }
 
 void Camera::setCameraDevice(const QCameraDevice &cameraDevice)
@@ -47,6 +59,18 @@ void Camera::saveImage()
 {
     QString filePath{generateFilePath()};
     m_imageCapture.captureToFile(filePath);
+}
+
+void Camera::startRecording()
+{
+    QString filePath{generateFilePath()};
+    m_mediaRecorder.setOutputLocation(filePath);
+    m_mediaRecorder.record();
+}
+
+void Camera::stopRecording()
+{
+    m_mediaRecorder.stop();
 }
 
 bool Camera::crosshairVisible()

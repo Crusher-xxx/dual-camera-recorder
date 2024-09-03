@@ -13,13 +13,38 @@
   <property name="windowTitle">
    <string>Dual Camera Recorder</string>
   </property>
+  <property name="styleSheet">
+   <string notr="true">QPushButton:disabled {
+	color: gray
+}</string>
+  </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
-    <item>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
      <widget class="Camera" name="cam1" native="true"/>
     </item>
-    <item>
+    <item row="0" column="1">
      <widget class="Camera" name="cam2" native="true"/>
+    </item>
+    <item row="2" column="0">
+     <widget class="QPushButton" name="pushButtonStartRecording">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="text">
+       <string>Start Recording</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="1">
+     <widget class="QPushButton" name="pushButtonStopRecording">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
+      <property name="text">
+       <string>Stop Recording</string>
+      </property>
+     </widget>
     </item>
    </layout>
   </widget>
