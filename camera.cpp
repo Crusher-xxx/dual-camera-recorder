@@ -13,8 +13,11 @@ Camera::Camera(QWidget *parent)
     setCrosshairVisible(false);
     m_crosshairVisible = true;
 
-    m_mediaCaptureSession.setVideoOutput(&m_graphicsVideoItem);
+    m_imageCapture.setQuality(QImageCapture::VeryHighQuality);
+
     m_mediaCaptureSession.setCamera(&m_camera);
+    m_mediaCaptureSession.setVideoOutput(&m_graphicsVideoItem);
+    m_mediaCaptureSession.setImageCapture(&m_imageCapture);
 
     ui.graphicsView->setScene(&m_graphicsScene);
     m_graphicsScene.addItem(&m_graphicsVideoItem);
@@ -30,6 +33,7 @@ Camera::Camera(QWidget *parent)
     m_vLine.setPen(crosshairPen);
 
     connect(&m_graphicsVideoItem, &QGraphicsVideoItem::nativeSizeChanged, this, &Camera::repositionScene);
+    connect(&m_imageCapture, &QImageCapture::imageSaved, this, &Camera::imageSaved);
 }
 
 void Camera::setCameraDevice(const QCameraDevice &cameraDevice)
@@ -37,6 +41,12 @@ void Camera::setCameraDevice(const QCameraDevice &cameraDevice)
     m_camera.setCameraDevice(cameraDevice);
     m_camera.start();
     ui.label->setText(m_camera.cameraDevice().description());
+}
+
+void Camera::saveImage()
+{
+    QString filePath{generateFilePath()};
+    m_imageCapture.captureToFile(filePath);
 }
 
 bool Camera::crosshairVisible()
@@ -73,6 +83,7 @@ void Camera::repositionScene()
     m_vLine.setPos(m_graphicsVideoItem.boundingRect().center());
     m_crosshair.setPos(m_graphicsVideoItem.boundingRect().center());
 
+    // When the video appears show crosshair if enabled
     setCrosshairVisible(m_crosshairVisible);
     ui.graphicsView->fitInView(&m_graphicsVideoItem, Qt::KeepAspectRatio);
 }
@@ -81,4 +92,11 @@ void Camera::resizeEvent(QResizeEvent *event)
 {
     // Zoom to video
     ui.graphicsView->fitInView(&m_graphicsVideoItem, Qt::KeepAspectRatio);
+}
+
+QString Camera::generateFilePath()
+{
+    QDateTime dateTime {QDateTime::currentDateTime()};
+    QString fileName {dateTime.toString("yyyy-MM-dd_hh-mm-ss.zzz") + '_' + m_cameraIdentifier};
+    return m_recDir.absolutePath() + '/' + fileName;
 }

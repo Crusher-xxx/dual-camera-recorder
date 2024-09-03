@@ -38,6 +38,13 @@
     </property>
     <addaction name="actionShowCrosshair"/>
    </widget>
+   <widget class="QMenu" name="menuImage">
+    <property name="title">
+     <string>Image</string>
+    </property>
+    <addaction name="actionTakeSnapshot"/>
+   </widget>
+   <addaction name="menuImage"/>
    <addaction name="menuSettings"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
@@ -50,6 +57,11 @@
    </property>
    <property name="text">
     <string>Show crosshair</string>
+   </property>
+  </action>
+  <action name="actionTakeSnapshot">
+   <property name="text">
+    <string>Take snapshot</string>
    </property>
   </action>
  </widget>

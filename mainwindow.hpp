@@ -3,7 +3,8 @@
 
 #include "ui_mainwindow.h"
 
-#include <QMainWindow>
+#include <QtWidgets/QMainWindow>
+#include <QtCore/QDir>
 
 class MainWindow : public QMainWindow
 {
@@ -14,5 +15,9 @@ public:
 
 private:
     Ui::MainWindow ui;
+
+    QDir m_recDir;
+
+    void showRecDirMessage();
 };
 #endif // MAINWINDOW_HPP
