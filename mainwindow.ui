@@ -43,6 +43,7 @@
      <string>Image</string>
     </property>
     <addaction name="actionTakeSnapshot"/>
+    <addaction name="actionOpenRecordings"/>
    </widget>
    <addaction name="menuImage"/>
    <addaction name="menuSettings"/>
@@ -62,6 +63,11 @@
   <action name="actionTakeSnapshot">
    <property name="text">
     <string>Take snapshot</string>
+   </property>
+  </action>
+  <action name="actionOpenRecordings">
+   <property name="text">
+    <string>Open recordings</string>
    </property>
   </action>
  </widget>

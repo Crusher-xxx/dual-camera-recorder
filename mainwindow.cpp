@@ -1,6 +1,7 @@
 #include "mainwindow.hpp"
 
 #include <QtMultimedia/QMediaDevices>
+#include <QtGui/QDesktopServices>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow{parent}
@@ -23,10 +24,16 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.actionShowCrosshair, &QAction::toggled, ui.cam2, &Camera::setCrosshairVisible);
     connect(ui.actionTakeSnapshot, &QAction::triggered, ui.cam1, &Camera::saveImage);
     connect(ui.actionTakeSnapshot, &QAction::triggered, ui.cam2, &Camera::saveImage);
+    connect(ui.actionOpenRecordings, &QAction::triggered, this, &MainWindow::openRecDir);
     connect(ui.cam2, &Camera::imageSaved, this, &MainWindow::showRecDirMessage);
 }
 
 void MainWindow::showRecDirMessage()
 {
     ui.statusbar->showMessage("Image saved: " + m_recDir.path());
+}
+
+void MainWindow::openRecDir()
+{
+    QDesktopServices::openUrl(m_recDir.absolutePath());
 }
