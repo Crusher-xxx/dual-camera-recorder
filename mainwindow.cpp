@@ -3,6 +3,7 @@
 #include <QtMultimedia/QMediaDevices>
 #include <QtGui/QDesktopServices>
 #include <QKeyEvent>
+#include <QtWidgets/QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow{parent}
@@ -10,7 +11,23 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui.setupUi(this);
 
-    auto videoDevices{QMediaDevices::videoInputs()};
+    QList<QCameraDevice> videoDevices{QMediaDevices::videoInputs()};
+    while (videoDevices.length() < 2) {
+        QString msg{"App requires 2 cameras. Found %1. Connect more cameras and click `Retry`"};
+        msg = msg.arg(videoDevices.length());
+
+        QMessageBox msgBox{};
+        msgBox.setText(msg);
+        msgBox.setStandardButtons(QMessageBox::Button::Retry | QMessageBox::Button::Abort);
+        int ret = msgBox.exec();
+
+        if (ret == QMessageBox::Button::Abort)
+        {
+            throw std::runtime_error(msgBox.text().toStdString());
+        }
+
+        videoDevices = QMediaDevices::videoInputs();
+    }
     ui.cam1->setCameraDevice(videoDevices[0]);
     ui.cam2->setCameraDevice(videoDevices[1]);
 
@@ -59,13 +76,15 @@ void MainWindow::showRecDurationMessage(qint64 duration)
     seconds %= 60;
     minutes %= 60;
 
-    QString str{QString("Duration: %1:%2:%3.%4")
-                    .arg(hours, 2, 10, QChar{'0'})
-                    .arg(minutes, 2, 10, QChar{'0'})
-                    .arg(seconds, 2, 10, QChar{'0'})
-                    .arg(milliseconds, 2, 10, QChar{'0'})};
+    QString msg{"Duration: %1:%2:%3.%4"};
+    QChar fillChar{'0'};
+    msg = msg
+              .arg(hours, 2, 10, fillChar)
+              .arg(minutes, 2, 10, fillChar)
+              .arg(seconds, 2, 10, fillChar)
+              .arg(milliseconds, 2, 10, fillChar);
 
-    ui.statusbar->showMessage(str);
+    ui.statusbar->showMessage(msg);
 }
 
 void MainWindow::keyPressEvent(QKeyEvent *event)
