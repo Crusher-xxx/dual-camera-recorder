@@ -2,6 +2,7 @@
 
 #include <QtMultimedia/QMediaDevices>
 #include <QtGui/QDesktopServices>
+#include <QKeyEvent>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow{parent}
@@ -35,7 +36,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui.pushButtonStartRecording, &QPushButton::clicked, ui.cam2, &Camera::startRecording);
     connect(ui.pushButtonStopRecording, &QPushButton::clicked, ui.cam1, &Camera::stopRecording);
     connect(ui.pushButtonStopRecording, &QPushButton::clicked, ui.cam2, &Camera::stopRecording);
-
 }
 
 void MainWindow::openRecDir()
@@ -66,4 +66,17 @@ void MainWindow::showRecDurationMessage(qint64 duration)
                     .arg(milliseconds, 2, 10, QChar{'0'})};
 
     ui.statusbar->showMessage(str);
+}
+
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    switch (event->key()) {
+    case Qt::Key::Key_Enter:
+    case Qt::Key::Key_Return:
+        ui.cam1->saveImage();
+        ui.cam2->saveImage();
+        break;
+    default:
+        break;
+    }
 }

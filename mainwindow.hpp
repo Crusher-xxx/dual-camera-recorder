@@ -21,5 +21,6 @@ private:
     void openRecDir();
     void showRecDirMessage();
     void showRecDurationMessage(qint64 duration);
+    void keyPressEvent(QKeyEvent *event) override;
 };
 #endif // MAINWINDOW_HPP
