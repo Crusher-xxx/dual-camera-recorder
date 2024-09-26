@@ -17,6 +17,7 @@ set(PROJECT_SOURCES
         main.cpp
         mainwindow.hpp mainwindow.cpp mainwindow.ui
         camera.hpp camera.cpp camera.ui
+        graphicsview.hpp graphicsview.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
