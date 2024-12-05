@@ -122,5 +122,5 @@ QString Camera::generateFilePath()
 {
     QDateTime dateTime {QDateTime::currentDateTime()};
     QString fileName {dateTime.toString("yyyy-MM-dd_hh-mm-ss.zzz") + '_' + m_cameraIdentifier};
-    return m_recDir.absolutePath() + '/' + fileName;
+    return m_recDir.absolutePath() + '/' + fileName + ".mp4";
 }
