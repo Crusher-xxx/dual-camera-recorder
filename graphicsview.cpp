@@ -3,7 +3,8 @@
 #include <QtGui/QWheelEvent>
 #include <QtWidgets/QScrollBar>
 
-GraphicsView::GraphicsView(QWidget *parent) {
+GraphicsView::GraphicsView(QWidget *parent) : m_zoomFactor{1.0}
+{
     setTransformationAnchor(ViewportAnchor::AnchorUnderMouse);
 }
 
@@ -11,6 +12,12 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
 {
     auto angle = event->angleDelta().y();
     auto zoomFactor = 1 + angle / 1000.0;
+    auto currentScale = transform().m11();
+    if (currentScale * zoomFactor < m_fitInViewScale)
+    {
+        zoomFactor = m_fitInViewScale / currentScale;
+    }
+    m_zoomFactor *= zoomFactor;
     scale(zoomFactor, zoomFactor);
     event->accept();
 }
@@ -37,4 +44,14 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
         m_panStartY = event->position().y();
     }
     QGraphicsView::mouseMoveEvent(event);
+}
+
+
+void GraphicsView::fitInView(const QGraphicsItem *item, Qt::AspectRatioMode aspectRatioMode)
+{
+    auto viewportCenterScene = mapToScene(viewport()->rect().center());
+    QGraphicsView::fitInView(item, aspectRatioMode);
+    m_fitInViewScale = transform().m11();
+    scale(m_zoomFactor, m_zoomFactor);
+    centerOn(viewportCenterScene);
 }
