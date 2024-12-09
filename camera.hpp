@@ -58,9 +58,10 @@ private:
     QImageCapture m_imageCapture;
     QMediaRecorder m_mediaRecorder;
 
-    void repositionScene();
+    void onVideoLoaded();
     void resizeEvent(QResizeEvent *event) override;
     QString generateFilePath();
+    void onScaleChanged(qreal scaleX, qreal scaleY);
 };
 
 #endif // CAMERA_HPP

@@ -5,7 +5,7 @@ Camera::Camera(QWidget *parent)
     , m_hLine{&m_graphicsVideoItem}
     , m_vLine{&m_graphicsVideoItem}
     , m_crosshair{QPixmap{":/res/crosshair.png"}, &m_graphicsVideoItem}
-    , m_crosshairScale{0.1}
+    , m_crosshairScale{0.2}
 {
     ui.setupUi(this);
 
@@ -30,14 +30,19 @@ Camera::Camera(QWidget *parent)
     // Styling
     m_graphicsScene.setBackgroundBrush(Qt::GlobalColor::gray);
     QColor crosshairColor{Qt::GlobalColor::red};
-    QPen crosshairPen{crosshairColor, 1.5};
+    QPen crosshairPen{crosshairColor, 3.5};
     m_hLine.setPen(crosshairPen);
     m_vLine.setPen(crosshairPen);
 
-    connect(&m_graphicsVideoItem, &QGraphicsVideoItem::nativeSizeChanged, this, &Camera::repositionScene);
+    m_hLine.setFlag(QGraphicsItem::ItemIgnoresTransformations);
+    m_vLine.setFlag(QGraphicsItem::ItemIgnoresTransformations);
+    m_crosshair.setFlag(QGraphicsItem::ItemIgnoresTransformations);
+
+    connect(&m_graphicsVideoItem, &QGraphicsVideoItem::nativeSizeChanged, this, &Camera::onVideoLoaded);
     connect(&m_imageCapture, &QImageCapture::imageSaved, this, &Camera::imageSaved);
     connect(&m_mediaRecorder, &QMediaRecorder::durationChanged, this, &Camera::recDurationChaged);
     connect(&m_mediaRecorder, &QMediaRecorder::recorderStateChanged, this, &Camera::recStateChanged);
+    connect(ui.graphicsView, &GraphicsView::scaleChanged, this, &Camera::onScaleChanged);
 }
 
 Camera::~Camera()
@@ -87,7 +92,7 @@ void Camera::setCrosshairVisible(bool visible)
     emit crosshairVisibleChanged(visible);
 }
 
-void Camera::repositionScene()
+void Camera::onVideoLoaded()
 {
     // Set the scene to be the same size as the video
     m_graphicsScene.setSceneRect(m_graphicsVideoItem.boundingRect());
@@ -96,18 +101,12 @@ void Camera::repositionScene()
     auto ratio {m_graphicsVideoItem.boundingRect().width() / m_crosshair.boundingRect().width()};
     m_crosshair.setScale(m_crosshairScale * ratio);
 
-    // Position lines relatively to their centers
-    qreal videoHalfWidth = m_graphicsVideoItem.boundingRect().width() / 2;
-    qreal videoHalfHeight = m_graphicsVideoItem.boundingRect().height() / 2;
-    m_hLine.setLine(-videoHalfWidth, 0, videoHalfWidth, 0);
-    m_vLine.setLine(0, -videoHalfHeight, 0, videoHalfHeight);
-
-    // Position at the video's center
+    // Place lines at the video's center
     m_hLine.setPos(m_graphicsVideoItem.boundingRect().center());
     m_vLine.setPos(m_graphicsVideoItem.boundingRect().center());
     m_crosshair.setPos(m_graphicsVideoItem.boundingRect().center());
 
-    // When the video appears show crosshair if enabled
+    // Show crosshair if enabled
     setCrosshairVisible(m_crosshairVisible);
     ui.graphicsView->fitInView(&m_graphicsVideoItem, Qt::KeepAspectRatio);
 }
@@ -123,4 +122,13 @@ QString Camera::generateFilePath()
     QDateTime dateTime {QDateTime::currentDateTime()};
     QString fileName {dateTime.toString("yyyy-MM-dd_hh-mm-ss.zzz") + '_' + m_cameraIdentifier};
     return m_recDir.absolutePath() + '/' + fileName + ".mp4";
+}
+
+void Camera::onScaleChanged(qreal scaleX, qreal scaleY)
+{
+    // Line positioning works relative to its center
+    qreal videoHalfWidth = m_graphicsVideoItem.boundingRect().width() / 2 * scaleX;
+    qreal videoHalfHeight = m_graphicsVideoItem.boundingRect().height() / 2 * scaleY;
+    m_hLine.setLine(-videoHalfWidth, 0, videoHalfWidth, 0);
+    m_vLine.setLine(0, -videoHalfHeight, 0, videoHalfHeight);
 }

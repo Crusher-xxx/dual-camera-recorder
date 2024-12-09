@@ -7,6 +7,9 @@ class GraphicsView : public QGraphicsView
 {
     Q_OBJECT
 
+signals:
+    void scaleChanged(qreal scaleX, qreal scaleY);
+
 public:
     GraphicsView(QWidget *parent = nullptr);
 
@@ -14,12 +17,14 @@ public:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void fitInView(const QGraphicsItem *item, Qt::AspectRatioMode aspectRatioMode = Qt::IgnoreAspectRatio);
+    void scale(qreal sx, qreal sy);
 
 private:
     qreal m_panStartX;
     qreal m_panStartY;
     qreal m_zoomFactor;
-    qreal m_fitInViewScale;
+    qreal m_fitInViewScaleX;
+    qreal m_fitInViewScaleY;
 };
 
 #endif // GRAPHICSVIEW_HPP
