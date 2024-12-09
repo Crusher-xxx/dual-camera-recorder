@@ -63,13 +63,13 @@ void Camera::setCameraDevice(const QCameraDevice &cameraDevice)
 void Camera::saveImage()
 {
     QString filePath{generateFilePath()};
-    m_imageCapture.captureToFile(filePath);
+    m_imageCapture.captureToFile(filePath + ".jpg");
 }
 
 void Camera::startRecording()
 {
     QString filePath{generateFilePath()};
-    m_mediaRecorder.setOutputLocation(filePath);
+    m_mediaRecorder.setOutputLocation(filePath + ".mp4");
     m_mediaRecorder.record();
 }
 
@@ -121,7 +121,7 @@ QString Camera::generateFilePath()
 {
     QDateTime dateTime {QDateTime::currentDateTime()};
     QString fileName {dateTime.toString("yyyy-MM-dd_hh-mm-ss.zzz") + '_' + m_cameraIdentifier};
-    return m_recDir.absolutePath() + '/' + fileName + ".mp4";
+    return m_recDir.absolutePath() + '/' + fileName;
 }
 
 void Camera::onScaleChanged(qreal scaleX, qreal scaleY)
