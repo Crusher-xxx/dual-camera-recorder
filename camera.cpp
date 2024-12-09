@@ -13,8 +13,8 @@ Camera::Camera(QWidget *parent)
     setCrosshairVisible(false);
     m_crosshairVisible = true;
 
-    m_imageCapture.setQuality(QImageCapture::VeryHighQuality);
-    m_mediaRecorder.setQuality(QMediaRecorder::VeryHighQuality);
+    // m_imageCapture.setQuality(QImageCapture::VeryHighQuality);
+    // m_mediaRecorder.setQuality(QMediaRecorder::VeryHighQuality);
 
     m_mediaCaptureSession.setCamera(&m_camera);
     m_mediaCaptureSession.setVideoOutput(&m_graphicsVideoItem);
