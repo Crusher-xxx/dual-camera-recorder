@@ -57,7 +57,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::openRecDir()
 {
-    QDesktopServices::openUrl(m_recDir.absolutePath());
+    auto url = QUrl::fromLocalFile(m_recDir.absolutePath());
+    QDesktopServices::openUrl(url);
 }
 
 void MainWindow::showRecDirMessage()
