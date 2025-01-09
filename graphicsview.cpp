@@ -14,16 +14,34 @@ void GraphicsView::wheelEvent(QWheelEvent *event)
     auto zoomFactor = 1 + angle / 1000.0;
 
     // Restrict zooming out too much
-    auto currentScale = transform().m11();
-    auto m_fitInViewScale = std::min(m_fitInViewScaleX, m_fitInViewScaleY);
-    if (currentScale * zoomFactor < m_fitInViewScale)
+    auto currentScale = std::min(transform().m11(), transform().m22());
+    auto fitInViewScale = std::min(m_fitInViewScaleX, m_fitInViewScaleY);
+    if (currentScale * zoomFactor < fitInViewScale)
     {
-        zoomFactor = m_fitInViewScale / currentScale;
+        zoomFactor = fitInViewScale / currentScale;
     }
     m_zoomFactor *= zoomFactor;
 
     scale(zoomFactor, zoomFactor);
     event->accept();
+}
+
+void GraphicsView::fitInView(const QGraphicsItem *item, Qt::AspectRatioMode aspectRatioMode)
+{
+    auto viewportCenterScene = mapToScene(viewport()->rect().center());
+    QGraphicsView::fitInView(item, aspectRatioMode);
+    m_fitInViewScaleX = transform().m11();
+    m_fitInViewScaleY = transform().m22();
+    scale(m_zoomFactor, m_zoomFactor);
+    centerOn(viewportCenterScene);
+}
+
+void GraphicsView::scale(qreal sx, qreal sy)
+{
+    QGraphicsView::scale(sx, sy);
+    auto scaleX = m_fitInViewScaleX * m_zoomFactor;
+    auto scaleY = m_fitInViewScaleY * m_zoomFactor;
+    emit scaleChanged(scaleX, scaleY);
 }
 
 void GraphicsView::mousePressEvent(QMouseEvent *event)
@@ -48,22 +66,4 @@ void GraphicsView::mouseMoveEvent(QMouseEvent *event)
         m_panStartY = event->position().y();
     }
     QGraphicsView::mouseMoveEvent(event);
-}
-
-void GraphicsView::fitInView(const QGraphicsItem *item, Qt::AspectRatioMode aspectRatioMode)
-{
-    auto viewportCenterScene = mapToScene(viewport()->rect().center());
-    QGraphicsView::fitInView(item, aspectRatioMode);
-    m_fitInViewScaleX = transform().m11();
-    m_fitInViewScaleY = transform().m22();
-    scale(m_zoomFactor, m_zoomFactor);
-    centerOn(viewportCenterScene);
-}
-
-void GraphicsView::scale(qreal sx, qreal sy)
-{
-    QGraphicsView::scale(sx, sy);
-    auto scaleX = m_fitInViewScaleX * m_zoomFactor;
-    auto scaleY = m_fitInViewScaleY * m_zoomFactor;
-    emit scaleChanged(scaleX, scaleY);
 }
